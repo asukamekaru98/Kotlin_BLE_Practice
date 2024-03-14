@@ -6,14 +6,17 @@
     <uses-permission android:name="android.permission.BLUETOOTH" />
     <!--Bluetoothアダプタの管理機能にアクセスするための権限、Bluetoothの有効化や無効化、ペアリングの要求などの管理機能が含まれる-->
     <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
+    <!--精度の高い位置情報にアクセスするための権限、GPSやWi-Fiなどの方法を使用して、デバイスの正確な位置情報にアクセスできる-->
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+
+    <!--Bluetoothアドバタイザの権限-->
+    <uses-permission android:name="android.permission.BLUETOOTH_ADVERTISE" />
     <!--Bluetooth接続を確立するための権限-->
     <uses-permission android:name="android.permission.BLUETOOTH_CONNECT" />
     <!--Bluetoothスキャンをするための権限-->
     <uses-permission android:name="android.permission.BLUETOOTH_SCAN" />
 
-    <!--精度の高い位置情報にアクセスするための権限、GPSやWi-Fiなどの方法を使用して、デバイスの正確な位置情報にアクセスできる-->
-    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
-    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+
 
     <!--BLE機能を使用する宣言-->
     <uses-feature android:name="android.hardware.bluetooth_le" android:required="true"/>

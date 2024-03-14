@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">BLE_Practice_2</string>
+
+    <string name="permission_required">Camera access is required to display the camera preview.</string>
+    <string name="ok">OK</string>
+    <string name="permission_granted">Permission is granted. You can use the camera now.</string>
 </resources>

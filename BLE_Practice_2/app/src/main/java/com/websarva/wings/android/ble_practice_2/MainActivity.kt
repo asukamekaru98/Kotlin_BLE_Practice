@@ -13,6 +13,7 @@ import android.util.Log
 import android.widget.Button
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
@@ -25,7 +26,6 @@ class MainActivity : AppCompatActivity() {
 
 	private val bluetoothAdapter: BluetoothAdapter? = BluetoothAdapter.getDefaultAdapter()
 	private val bluetoothLeScanner: BluetoothLeScanner? = bluetoothAdapter?.bluetoothLeScanner
-
 
 	private var scanning = false
 	private val handler = Handler()
@@ -45,14 +45,23 @@ class MainActivity : AppCompatActivity() {
 			insets
 		}*/
 
+	//	launcher.launch(
+	//		arrayOf(
+	//			Manifest.permission.ACCESS_FINE_LOCATION,
+	//			Manifest.permission.ACCESS_COARSE_LOCATION,
+	//			Manifest.permission.BLUETOOTH_CONNECT,
+	//			Manifest.permission.BLUETOOTH_SCAN,
+	//		)
+	//	)
+
 		/** 権限確認 **/
-		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) { // デバイスのAndroidバージョンがAndroid 10（APIレベル29）以上であるかどうかを確認
-			// 指定の権限が既に許可されているか確認
-			if (ActivityCompat.checkSelfPermission(this,Manifest.permission.ACCESS_BACKGROUND_LOCATION)!= PackageManager.PERMISSION_GRANTED) {
-				// 権限がなければ、ユーザーに権限を要求する
-				ActivityCompat.requestPermissions(this,arrayOf(Manifest.permission.ACCESS_BACKGROUND_LOCATION), PERMISSION_REQUEST_CODE) // 権限要求の識別コード
-			}
-		}
+	//	if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) { // デバイスのAndroidバージョンがAndroid 10（APIレベル29）以上であるかどうかを確認
+	//		// 指定の権限が既に許可されているか確認
+	//		if (ActivityCompat.checkSelfPermission(this,Manifest.permission.ACCESS_BACKGROUND_LOCATION)!= PackageManager.PERMISSION_GRANTED) {
+	//			// 権限がなければ、ユーザーに権限を要求する
+	//			ActivityCompat.requestPermissions(this,arrayOf(Manifest.permission.ACCESS_BACKGROUND_LOCATION), PERMISSION_REQUEST_CODE) // 権限要求の識別コード
+	//		}
+	//	}
 
 		//// Bluetooth Scanパーミッションをチェック
 		//if (ActivityCompat.checkSelfPermission(this@MainActivity, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
@@ -63,6 +72,7 @@ class MainActivity : AppCompatActivity() {
 
 		checkPermission()   //パーミッション確認
 
+
 		//ボタン押下
 		findViewById<Button>(R.id.scan_button).setOnClickListener {
 			scanLeDevice()
@@ -70,22 +80,32 @@ class MainActivity : AppCompatActivity() {
 
 	}
 
-	fun checkPermission() {
-		// 既に許可している
-		if (checkSelfPermission(Manifest.permission.BLUETOOTH_SCAN) == PackageManager.PERMISSION_GRANTED) {
-			return
+	private val launcher =
+		registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) {
+			val fineLocation = it[Manifest.permission.ACCESS_FINE_LOCATION] ?: false
+			val coarseLocation = it[Manifest.permission.ACCESS_COARSE_LOCATION] ?: false
+			val blueConnect = it[Manifest.permission.BLUETOOTH_CONNECT] ?: false
+			val blueScanner = it[Manifest.permission.BLUETOOTH_SCAN] ?: false
+
+			if (fineLocation && coarseLocation && blueConnect && blueScanner) {
+				Toast.makeText(this, "許可されました", Toast.LENGTH_SHORT)
+					.show()
+			} else {
+				Toast.makeText(this, "否認されました", Toast.LENGTH_SHORT)
+					.show()
+			}
 		}
 
-		// 許可していない場合、パーミッションの取得を行う
-		// 以前拒否されている場合は、なぜ必要かを通知し、手動で許可してもらう
-		if (!shouldShowRequestPermissionRationale(Manifest.permission.BLUETOOTH_SCAN)) {
-			Toast.makeText(this, "ファイル書き込みのために許可してください", Toast.LENGTH_SHORT)
-				.show()
-		}
-		// パーミッションの取得を依頼
-		requestPermissions(
-			arrayOf<String>(Manifest.permission.BLUETOOTH_SCAN),
-			PERMISSION_REQUEST_CODE
+
+
+	fun checkPermission() {
+		launcher.launch(
+			arrayOf(
+				Manifest.permission.ACCESS_FINE_LOCATION,
+				Manifest.permission.ACCESS_COARSE_LOCATION,
+				Manifest.permission.BLUETOOTH_CONNECT,
+				Manifest.permission.BLUETOOTH_SCAN,
+			)
 		)
 	}
 
@@ -93,39 +113,6 @@ class MainActivity : AppCompatActivity() {
 	private fun scanLeDevice() {
 
 		/** 権限確認 **/
-		// Bluetoothパーミッションをチェック
-		if (ActivityCompat.checkSelfPermission(this@MainActivity,Manifest.permission.BLUETOOTH)!= PackageManager.PERMISSION_GRANTED) {
-			ActivityCompat.requestPermissions(this@MainActivity,arrayOf(Manifest.permission.BLUETOOTH), PERMISSION_REQUEST_CODE)
-			//return
-		}
-
-		// Bluetooth Adminパーミッションをチェック
-		if (ActivityCompat.checkSelfPermission(this@MainActivity,Manifest.permission.BLUETOOTH_ADMIN)!= PackageManager.PERMISSION_GRANTED) {
-			ActivityCompat.requestPermissions(this@MainActivity,arrayOf(Manifest.permission.BLUETOOTH_ADMIN), PERMISSION_REQUEST_CODE)
-			//return
-		}
-
-		// Bluetooth Scanパーミッションをチェック
-//		if (ContextCompat.checkSelfPermission(baseContext,Manifest.permission.BLUETOOTH_SCAN)!= PackageManager.PERMISSION_GRANTED) {
-//			ActivityCompat.requestPermissions(this,arrayOf(Manifest.permission.BLUETOOTH_SCAN), PERMISSION_REQUEST_CODE)
-//		}
-
-		if (ActivityCompat.checkSelfPermission(this@MainActivity, Manifest.permission.BLUETOOTH_SCAN) != PackageManager.PERMISSION_GRANTED) {
-			// 権限が付与されていない場合の処理
-			val permissions = arrayOf(Manifest.permission.BLUETOOTH_SCAN)
-			ActivityCompat.requestPermissions(this@MainActivity, permissions, PERMISSION_REQUEST_CODE)
-			//return
-		}
-
-		// Bluetooth Scanパーミッションをチェック
-		if (ActivityCompat.checkSelfPermission(this@MainActivity, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-			// パーミッションが許可されていない場合、ユーザーにパーミッションの許可を求める
-			ActivityCompat.requestPermissions(this@MainActivity, arrayOf(Manifest.permission.ACCESS_FINE_LOCATION), PERMISSION_REQUEST_CODE)
-			//return
-		}
-
-
-
 		bluetoothLeScanner?.let { scanner ->
 			if (!scanning) {
 				// スキャン中でない場合、一定のスキャン期間後にスキャンを停止します。
@@ -159,7 +146,7 @@ class MainActivity : AppCompatActivity() {
 
 	}
 
-	override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
+/*	override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
 		super.onRequestPermissionsResult(requestCode, permissions, grantResults)
 
 		when (requestCode) {
@@ -177,7 +164,7 @@ class MainActivity : AppCompatActivity() {
 				// 未知の requestCode
 			}
 		}
-	}
+	}*/
 
 
 
