@@ -6,7 +6,6 @@ import android.bluetooth.le.BluetoothLeScanner
 import android.bluetooth.le.ScanCallback
 import android.bluetooth.le.ScanResult
 import android.content.pm.PackageManager
-import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.util.Log
@@ -17,13 +16,11 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 
 
 class MainActivity : AppCompatActivity() {
-
-	private val PERMISSION_REQUEST_CODE = 1000  //パーミッションコード
-	private val REQUEST_ENABLE_BT = 1   //
-
 	private val bluetoothAdapter: BluetoothAdapter? = BluetoothAdapter.getDefaultAdapter()
 	private val bluetoothLeScanner: BluetoothLeScanner? = bluetoothAdapter?.bluetoothLeScanner
 
@@ -33,45 +30,38 @@ class MainActivity : AppCompatActivity() {
 	// BLEスキャンの時間制限(10秒)
 	private val SCAN_PERIOD: Long = 10000
 
-	//private val leDeviceListAdapter = LeDeviceListAdapter()
+	private lateinit var recyclerView:RecyclerView
+
+	//private val names: ArrayList<String> = arrayListOf(
+	//	"Bellflower", "Bougainvillea", "Cosmos", "Cosmos field",
+	//	"Delphinium", "Flowers", "Lotus", "Spring Flowers"
+	//)
+	//private var names: ArrayList<String> = arrayListOf()
 
 	override fun onCreate(savedInstanceState: Bundle?) {
 		super.onCreate(savedInstanceState)
 		enableEdgeToEdge()
 		setContentView(R.layout.activity_main)
-		/*ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
-			val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-			v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
-			insets
-		}*/
-
-	//	launcher.launch(
-	//		arrayOf(
-	//			Manifest.permission.ACCESS_FINE_LOCATION,
-	//			Manifest.permission.ACCESS_COARSE_LOCATION,
-	//			Manifest.permission.BLUETOOTH_CONNECT,
-	//			Manifest.permission.BLUETOOTH_SCAN,
-	//		)
-	//	)
+		setSupportActionBar(findViewById(R.id.toolbar)) //アクションバー
 
 		/** 権限確認 **/
-	//	if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) { // デバイスのAndroidバージョンがAndroid 10（APIレベル29）以上であるかどうかを確認
-	//		// 指定の権限が既に許可されているか確認
-	//		if (ActivityCompat.checkSelfPermission(this,Manifest.permission.ACCESS_BACKGROUND_LOCATION)!= PackageManager.PERMISSION_GRANTED) {
-	//			// 権限がなければ、ユーザーに権限を要求する
-	//			ActivityCompat.requestPermissions(this,arrayOf(Manifest.permission.ACCESS_BACKGROUND_LOCATION), PERMISSION_REQUEST_CODE) // 権限要求の識別コード
-	//		}
-	//	}
+		checkPermission()
 
-		//// Bluetooth Scanパーミッションをチェック
-		//if (ActivityCompat.checkSelfPermission(this@MainActivity, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-		//	// パーミッションが許可されていない場合、ユーザーにパーミッションの許可を求める
-		//	ActivityCompat.requestPermissions(this@MainActivity, arrayOf(Manifest.permission.ACCESS_FINE_LOCATION), PERMISSION_REQUEST_CODE)
-		//	//return
-		//}
+		recyclerView = findViewById(R.id.my_recycler_view)              //使うRecyclerViewのid取得
+		recyclerView.adapter = RecyclerAdapter()                        //アダプタ接続
+		recyclerView.layoutManager = LinearLayoutManager(this)   //各アイテムを縦に並べる指示
 
-		checkPermission()   //パーミッション確認
+		//val recyclerView = findViewById<RecyclerView>(R.id.my_recycler_view)
+		// use this setting to improve performance if you know that changes
+		// in content do not change the layout size of the RecyclerView
+		recyclerView.setHasFixedSize(true)
 
+		// use a linear layout manager
+		//val rLayoutManager: RecyclerView.LayoutManager
+		//		= LinearLayoutManager(this)
+
+		//recyclerView.layoutManager = rLayoutManager
+		//recyclerView.adapter = MyAdapter(names)
 
 		//ボタン押下
 		findViewById<Button>(R.id.scan_button).setOnClickListener {
@@ -80,6 +70,7 @@ class MainActivity : AppCompatActivity() {
 
 	}
 
+	//パーミッションランチャー
 	private val launcher =
 		registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) {
 			val fineLocation = it[Manifest.permission.ACCESS_FINE_LOCATION] ?: false
@@ -112,7 +103,6 @@ class MainActivity : AppCompatActivity() {
 	// BLEデバイスをスキャンする
 	private fun scanLeDevice() {
 
-		/** 権限確認 **/
 		bluetoothLeScanner?.let { scanner ->
 			if (!scanning) {
 				// スキャン中でない場合、一定のスキャン期間後にスキャンを停止します。
@@ -146,28 +136,6 @@ class MainActivity : AppCompatActivity() {
 
 	}
 
-/*	override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
-		super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-
-		when (requestCode) {
-			PERMISSION_REQUEST_CODE -> {
-				if ((grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
-					// パーミッションが許可されたときの処理を書く
-				} else {
-					// パーミッションが拒否されたときの処理を書く
-					Toast.makeText(this, "権限ないです", Toast.LENGTH_SHORT).show()
-				}
-				return
-			}
-			// 他の 'when' ブランチをチェックするためのコード
-			else -> {
-				// 未知の requestCode
-			}
-		}
-	}*/
-
-
-
 	// BLEデバイスのスキャン結果を処理するためのScanCallbackを定義
 	private val leScanCallback: ScanCallback = object : ScanCallback() {
 
@@ -181,6 +149,11 @@ class MainActivity : AppCompatActivity() {
 			}
 
 			result.device?.let { device ->
+				//names.add(device.name?:"No Name")
+				//val adapter = ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, names)
+
+				//adapter.notifyDataSetChanged()
+
 				Log.d("TAG", device.name ?: "No Name")
 				Log.d("TAG", device.address ?: "No Address")
 				Log.d("TAG", device.bondState.toString())
