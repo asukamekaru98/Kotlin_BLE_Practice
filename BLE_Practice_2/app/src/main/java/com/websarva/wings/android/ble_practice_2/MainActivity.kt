@@ -28,9 +28,13 @@ class MainActivity : AppCompatActivity() {
 	private val handler = Handler()
 
 	// BLEスキャンの時間制限(10秒)
-	private val SCAN_PERIOD: Long = 10000
+	private val SCAN_PERIOD: Long = 1000
 
+
+	private var addList = ArrayList<BTdata>()       //まずは空のリストを用意
 	private lateinit var recyclerView:RecyclerView
+
+	private var recyclerAdapter = RecyclerAdapter(addList)
 
 	//private val names: ArrayList<String> = arrayListOf(
 	//	"Bellflower", "Bougainvillea", "Cosmos", "Cosmos field",
@@ -48,20 +52,11 @@ class MainActivity : AppCompatActivity() {
 		checkPermission()
 
 		recyclerView = findViewById(R.id.my_recycler_view)              //使うRecyclerViewのid取得
-		recyclerView.adapter = RecyclerAdapter()                        //アダプタ接続
+		recyclerView.adapter = recyclerAdapter                          //アダプタ接続
 		recyclerView.layoutManager = LinearLayoutManager(this)   //各アイテムを縦に並べる指示
 
-		//val recyclerView = findViewById<RecyclerView>(R.id.my_recycler_view)
-		// use this setting to improve performance if you know that changes
-		// in content do not change the layout size of the RecyclerView
+
 		recyclerView.setHasFixedSize(true)
-
-		// use a linear layout manager
-		//val rLayoutManager: RecyclerView.LayoutManager
-		//		= LinearLayoutManager(this)
-
-		//recyclerView.layoutManager = rLayoutManager
-		//recyclerView.adapter = MyAdapter(names)
 
 		//ボタン押下
 		findViewById<Button>(R.id.scan_button).setOnClickListener {
@@ -158,6 +153,12 @@ class MainActivity : AppCompatActivity() {
 				Log.d("TAG", device.address ?: "No Address")
 				Log.d("TAG", device.bondState.toString())
 				Log.d("TAG", device.type.toString())
+
+				val data = BTdata(device.address ?: "No Name")
+				addList.add(data)   //リストに追加
+				recyclerAdapter.notifyItemInserted(addList.lastIndex)   //追加した情報がRecyclerViewの末尾に追加される
+
+
 			}
 
 			//Log.d("TAG","aaaaa")
