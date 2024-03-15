@@ -153,8 +153,14 @@ class MainActivity : AppCompatActivity() {
 				Log.d("TAG", device.address ?: "No Address")
 				Log.d("TAG", device.bondState.toString())
 				Log.d("TAG", device.type.toString())
+				Log.d("TAG", device.uuids?.contentToString() ?: "No UUIDs") // device.uuidsがnullの場合に備えて安全呼び出し演算子を使用します
+				Log.d("TAG", device.bluetoothClass?.toString() ?: "No Bluetooth Class") // device.bluetoothClassがnullの場合に備えて安全呼び出し演算子を使用します
 
-				val data = BTdata(device.address ?: "No Name")
+
+				val data = BTdata(device.name ?: "No Name")
+
+
+
 				addList.add(data)   //リストに追加
 				recyclerAdapter.notifyItemInserted(addList.lastIndex)   //追加した情報がRecyclerViewの末尾に追加される
 
