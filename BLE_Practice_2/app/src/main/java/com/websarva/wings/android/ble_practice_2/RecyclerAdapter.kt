@@ -1,11 +1,18 @@
 package com.websarva.wings.android.ble_practice_2
 
+import android.Manifest
+import android.bluetooth.BluetoothAdapter
+import android.bluetooth.BluetoothDevice
+import android.bluetooth.BluetoothGatt
+import android.content.pm.PackageManager
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import android.widget.Toast
+import androidx.core.app.ActivityCompat
 import androidx.recyclerview.widget.RecyclerView
+
 
 /*impriment 埋め込む*/
 /*クラス名(private val 変数名:ArrayList or MutableList<データクラス>)とする。ちなArrayListの方がシンプルに使える。 */
@@ -32,6 +39,8 @@ class RecyclerAdapter(private val list:ArrayList<BTdata>):RecyclerView.Adapter<R
 			}
 		}
 	}
+
+
 
 	//1行分のレイアウトを生成
 	//ViewHolderのxmlとktを紐づける
