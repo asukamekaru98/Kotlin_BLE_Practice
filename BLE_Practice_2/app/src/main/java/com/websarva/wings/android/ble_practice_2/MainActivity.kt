@@ -66,6 +66,18 @@ class MainActivity : AppCompatActivity() {
 		//	bluetoothManager.connect2GATT()
 		}
 
+		//ボタン押下
+		findViewById<Button>(R.id.send_button).setOnClickListener {
+
+			bluetoothManager.sendStringToDevice("a")
+		}
+
+		//ボタン押下
+		findViewById<Button>(R.id.advatise_button).setOnClickListener {
+
+			bluetoothManager.startAdvertisingAsHID()
+		}
+
 	}
 
 	// BluetoothManagerからスキャン結果を受け取る
@@ -79,8 +91,13 @@ class MainActivity : AppCompatActivity() {
 	//GATTサーバーに接続する
 	fun connectGATT(device: BluetoothDevice){
 
-		bluetoothLeService.connect(device.address)
+		//bluetoothLeService.connect(device.address)
 		//bluetoothManager.connect2GATT(device)
+		bluetoothManager.connectToDevice(device)
+
+
 	}
+
+
 }
 
