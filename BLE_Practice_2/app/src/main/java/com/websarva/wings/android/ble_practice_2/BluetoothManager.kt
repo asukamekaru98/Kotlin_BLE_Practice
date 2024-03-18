@@ -33,7 +33,7 @@ class BluetoothManager(private val activity: MainActivity) {
     // BLEスキャンの時間制限(10秒)
     private val SCAN_PERIOD: Long = 1000
 
-    var bluetoothGatt: BluetoothGatt? = null
+   // var bluetoothGatt: BluetoothGatt? = null
 
     // BLEデバイスをスキャンする
     fun scanLeDevice() {
@@ -111,26 +111,10 @@ class BluetoothManager(private val activity: MainActivity) {
 
     }
 
-
+/*
     fun connect2GATT(device: BluetoothDevice) {
 
-       val gattCallback = object : BluetoothGattCallback() {
-           override fun onConnectionStateChange(gatt: BluetoothGatt, status: Int, newState: Int) {
-               if (newState == BluetoothProfile.STATE_CONNECTED) {
-                   // GATTサーバーに接続された
-               } else if (newState == BluetoothProfile.STATE_DISCONNECTED) {
-                   // GATTサーバーから切断された
-               }
-           }
 
-           override fun onServicesDiscovered(gatt: BluetoothGatt, status: Int) {
-               if (status == BluetoothGatt.GATT_SUCCESS) {
-                   // サービスが発見された
-               }
-           }
-
-           // 他のコールバックメソッド...
-       }
 
         if (ActivityCompat.checkSelfPermission(
                 activity,
@@ -148,5 +132,7 @@ class BluetoothManager(private val activity: MainActivity) {
 
 
     }
+
+ */
 
 }

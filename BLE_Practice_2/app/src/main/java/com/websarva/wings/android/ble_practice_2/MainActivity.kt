@@ -29,6 +29,7 @@ class MainActivity : AppCompatActivity() {
 	private lateinit var recyclerView:RecyclerView
 	private lateinit var permissionManager: PermissionManager
 	private lateinit var bluetoothManager: BluetoothManager
+	private lateinit var bluetoothLeService: BluetoothLeService
 
 	private var addList = ArrayList<BTdata>()       //まずは空のリストを用意
 	private var recyclerAdapter = RecyclerAdapter(addList,this)
@@ -49,6 +50,8 @@ class MainActivity : AppCompatActivity() {
 
 		// BluetoothManagerのインスタンスを生成し、MainActivityのインスタンスを渡す
 		bluetoothManager = BluetoothManager(this)
+
+		bluetoothLeService = BluetoothLeService(this)
 
 		//ボタン押下
 		findViewById<Button>(R.id.scan_button).setOnClickListener {
@@ -76,7 +79,8 @@ class MainActivity : AppCompatActivity() {
 	//GATTサーバーに接続する
 	fun connectGATT(device: BluetoothDevice){
 
-		bluetoothManager.connect2GATT(device)
+		bluetoothLeService.connect(device.address)
+		//bluetoothManager.connect2GATT(device)
 	}
 }
 
