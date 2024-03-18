@@ -16,7 +16,8 @@ import androidx.recyclerview.widget.RecyclerView
 
 /*impriment 埋め込む*/
 /*クラス名(private val 変数名:ArrayList or MutableList<データクラス>)とする。ちなArrayListの方がシンプルに使える。 */
-class RecyclerAdapter(private val list:ArrayList<BTdata>):RecyclerView.Adapter<RecyclerAdapter.ViewHolderItem>() {
+class RecyclerAdapter(private val list:ArrayList<BTdata>,private val activity: MainActivity):RecyclerView.Adapter<RecyclerAdapter.ViewHolderItem>() {
+
 
 	//インナークラス
 	inner class ViewHolderItem(v: View):RecyclerView.ViewHolder(v){
@@ -35,7 +36,8 @@ class RecyclerAdapter(private val list:ArrayList<BTdata>):RecyclerView.Adapter<R
 
 				//val item = list[pos]
 				//トースト
-				Toast.makeText(v.context, list[pos].BTAdddress, Toast.LENGTH_SHORT).show()
+				Toast.makeText(v.context, list[pos].device.address ?: "No Address", Toast.LENGTH_SHORT).show()
+				activity.connectGATT(list[pos].device)
 			}
 		}
 	}
@@ -59,7 +61,7 @@ class RecyclerAdapter(private val list:ArrayList<BTdata>):RecyclerView.Adapter<R
 
 		val currentItem = list[position]    //何番目のリストですか
 
-		holder.itemName.text = currentItem.BTAdddress   //そのリストの中の要素を指定して代入
+		holder.itemName.text = currentItem.device.address.toString()   //そのリストの中の要素を指定して代入
 
 
 	}

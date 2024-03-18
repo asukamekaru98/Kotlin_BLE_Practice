@@ -3,7 +3,9 @@ package com.websarva.wings.android.ble_practice_2
 import android.Manifest
 import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothDevice
+import android.bluetooth.BluetoothGatt
 import android.bluetooth.BluetoothGattCallback
+import android.bluetooth.BluetoothProfile
 import android.bluetooth.le.BluetoothLeScanner
 import android.bluetooth.le.ScanCallback
 import android.bluetooth.le.ScanResult
@@ -11,23 +13,30 @@ import android.content.Context
 import android.content.pm.PackageManager
 import android.os.Handler
 import android.util.Log
+import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.recyclerview.widget.RecyclerView
 
-class BluetoothManager(private val context: Context) {
-/*
+class BluetoothManager(private val activity: MainActivity) {
+
     private val bluetoothAdapter: BluetoothAdapter? = BluetoothAdapter.getDefaultAdapter()
     private val bluetoothLeScanner: BluetoothLeScanner? = bluetoothAdapter?.bluetoothLeScanner
 
     private var scanning = false
     private val handler = Handler()
 
+    private var scanResult = ArrayList<BTdata>()       //まずは空のリストを用意
+    //private val recyclerView:RecyclerView = rV
+
     // BLEスキャンの時間制限(10秒)
     private val SCAN_PERIOD: Long = 1000
 
+    var bluetoothGatt: BluetoothGatt? = null
 
     // BLEデバイスをスキャンする
-    private fun scanLeDevice() {
+    fun scanLeDevice() {
 
         bluetoothLeScanner?.let { scanner ->
             if (!scanning) {
@@ -37,13 +46,16 @@ class BluetoothManager(private val context: Context) {
 
 
                     if (ActivityCompat.checkSelfPermission(
-                            this,
+                            activity,
                             Manifest.permission.BLUETOOTH_SCAN
                         ) != PackageManager.PERMISSION_GRANTED
                     ) {
                         return@postDelayed
                     }
                     scanner.stopScan(leScanCallback)
+
+                    //スキャン完了後、スキャン結果を返す
+                    //activity.setScanResults(scanResult)
 
                 }, SCAN_PERIOD  /*10秒*/)
 
@@ -58,8 +70,6 @@ class BluetoothManager(private val context: Context) {
                 scanner.stopScan(leScanCallback)
             }
         }
-
-
     }
 
     // BLEデバイスのスキャン結果を処理するためのScanCallbackを定義
@@ -70,7 +80,7 @@ class BluetoothManager(private val context: Context) {
             super.onScanResult(callbackType, result)
 
             //パーミッションが許可されていなければ終わらせる
-            if (ContextCompat.checkSelfPermission(applicationContext, Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED) {
+            if (ContextCompat.checkSelfPermission(activity, Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED) {
                 return
             }
 
@@ -81,27 +91,17 @@ class BluetoothManager(private val context: Context) {
 
                 //adapter.notifyDataSetChanged()
 
-                Log.d("TAG", device.name ?: "No Name")
-                Log.d("TAG", device.address ?: "No Address")
-                Log.d("TAG", device.bondState.toString())
-                Log.d("TAG", device.type.toString())
-                Log.d("TAG", device.uuids?.contentToString() ?: "No UUIDs") // device.uuidsがnullの場合に備えて安全呼び出し演算子を使用します
-                Log.d("TAG", device.bluetoothClass?.toString() ?: "No Bluetooth Class") // device.bluetoothClassがnullの場合に備えて安全呼び出し演算子を使用します
 
+                //val data = BTdata(device.name ?: "No Name")
+                val data = BTdata(device)
 
-                val data = BTdata(device.name ?: "No Name")
+                //scanResult.add(data)   //リストに追加
+                activity.setAddData(data)
+                //recyclerAdapter.notifyItemInserted(addList.lastIndex)   //追加した情報がRecyclerViewの末尾に追加される
 
-
-
-
-
-                addList.add(data)   //リストに追加
-                recyclerAdapter.notifyItemInserted(addList.lastIndex)   //追加した情報がRecyclerViewの末尾に追加される
-
-
+                Log.d("TAG", scanResult.toString())
             }
 
-            //Log.d("TAG","aaaaa")
             // スキャン結果からBluetoothデバイスを取得し、リストに追加
             //leDeviceListAdapter.addDevice(result.device)
 
@@ -111,14 +111,42 @@ class BluetoothManager(private val context: Context) {
 
     }
 
-    fun connectToDevice(device: BluetoothDevice, gattCallback: BluetoothGattCallback) {
-        val bluetoothManager = context.getSystemService(Context.BLUETOOTH_SERVICE) as BluetoothManager
-        val bluetoothAdapter = bluetoothManager.adapter
-        val gatt = device.connectGatt(context, false, gattCallback, BluetoothDevice.TRANSPORT_LE)
-        // ここでGattを使用して通信を行う
+
+    fun connect2GATT(device: BluetoothDevice) {
+
+       val gattCallback = object : BluetoothGattCallback() {
+           override fun onConnectionStateChange(gatt: BluetoothGatt, status: Int, newState: Int) {
+               if (newState == BluetoothProfile.STATE_CONNECTED) {
+                   // GATTサーバーに接続された
+               } else if (newState == BluetoothProfile.STATE_DISCONNECTED) {
+                   // GATTサーバーから切断された
+               }
+           }
+
+           override fun onServicesDiscovered(gatt: BluetoothGatt, status: Int) {
+               if (status == BluetoothGatt.GATT_SUCCESS) {
+                   // サービスが発見された
+               }
+           }
+
+           // 他のコールバックメソッド...
+       }
+
+        if (ActivityCompat.checkSelfPermission(
+                activity,
+                Manifest.permission.BLUETOOTH_CONNECT
+            ) == PackageManager.PERMISSION_GRANTED
+        ) {
+            // ここでGattを使用して通信を行う
+            bluetoothGatt = device.connectGatt(activity, false, gattCallback)
+        }else{
+            Toast.makeText(activity, "パーミッションが許可されていません", Toast.LENGTH_SHORT).show()
+        }
+
+        //
+
 
 
     }
 
- */
 }
