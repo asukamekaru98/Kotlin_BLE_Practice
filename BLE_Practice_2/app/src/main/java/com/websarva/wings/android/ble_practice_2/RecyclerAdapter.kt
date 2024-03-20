@@ -37,7 +37,8 @@ class RecyclerAdapter(private val list:ArrayList<BTdata>,private val activity: M
 				//val item = list[pos]
 				//トースト
 				Toast.makeText(v.context, list[pos].device.address ?: "No Address", Toast.LENGTH_SHORT).show()
-				activity.connectGATT(list[pos].device)
+				//activity.connectGATT(list[pos].device)
+				activity.sendFile(list[pos].device)
 			}
 		}
 	}
@@ -61,7 +62,14 @@ class RecyclerAdapter(private val list:ArrayList<BTdata>,private val activity: M
 
 		val currentItem = list[position]    //何番目のリストですか
 
-		holder.itemName.text = currentItem.device.address.toString()   //そのリストの中の要素を指定して代入
+		if (ActivityCompat.checkSelfPermission(
+				activity,
+				Manifest.permission.BLUETOOTH_CONNECT
+			) != PackageManager.PERMISSION_GRANTED
+		) {
+			return
+		}
+		holder.itemName.text = currentItem.device.name   //そのリストの中の要素を指定して代入
 
 
 	}

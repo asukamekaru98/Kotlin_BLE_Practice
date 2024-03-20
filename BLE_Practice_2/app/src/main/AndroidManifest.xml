@@ -15,8 +15,8 @@
     <uses-permission android:name="android.permission.BLUETOOTH_CONNECT" />
     <!--Bluetoothスキャンをするための権限-->
     <uses-permission android:name="android.permission.BLUETOOTH_SCAN" />
-
-
+    <!--ストレージにアクセスするための権限-->
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
 
     <!--BLE機能を使用する宣言-->
     <uses-feature android:name="android.hardware.bluetooth_le" android:required="true"/>

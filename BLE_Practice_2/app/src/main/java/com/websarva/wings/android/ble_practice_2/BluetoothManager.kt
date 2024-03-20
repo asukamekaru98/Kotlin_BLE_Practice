@@ -16,6 +16,7 @@ import android.bluetooth.le.ScanCallback
 import android.bluetooth.le.ScanFilter
 import android.bluetooth.le.ScanResult
 import android.bluetooth.le.ScanSettings
+import android.content.Context
 import android.content.pm.PackageManager
 import android.net.wifi.p2p.WifiP2pDevice.CONNECTED
 import android.os.Handler
@@ -45,7 +46,7 @@ class BluetoothManager(private val activity: MainActivity) {
 
     var bluetoothGatt: BluetoothGatt? = null
 
-
+   // private val bluetoothLEService: BluetoothLEService by lazy { BluetoothLEService(this) }
 
     // BLEデバイスをスキャンする
     fun scanLeDevice() {
@@ -81,8 +82,8 @@ class BluetoothManager(private val activity: MainActivity) {
                 //BLEスキャン開始
                 scanning = true
                 //scanner.startScan(leScanCallback)
-                scanner.startScan(scanFilters, scanSettings, leScanCallback)
-
+                //scanner.startScan(scanFilters, scanSettings, leScanCallback)
+                scanner.startScan(leScanCallback)
             } else {
 
                 //BLEスキャン開始
@@ -168,142 +169,6 @@ class BluetoothManager(private val activity: MainActivity) {
             }
         }
 
-
-/*
-        val callback = object : BluetoothGattCallback() {
-            // 接続状態が変更されたときに実行される
-            override fun onConnectionStateChange(gatt: BluetoothGatt, status: Int, newState: Int) {
-                // 接続された
-                if (newState == BluetoothProfile.STATE_CONNECTED) {
-                    Log.i("TAG", "Connected to GATT server.")
-                    // サービスを検索する
-                    if (ActivityCompat.checkSelfPermission(
-                            activity,
-                            Manifest.permission.BLUETOOTH_CONNECT
-                        ) != PackageManager.PERMISSION_GRANTED
-                    ) {
-                        return
-                    }
-                    Log.i("TAG", "Attempting to start service discovery:" + gatt.discoverServices())
-
-                } else if (newState == BluetoothProfile.STATE_DISCONNECTED) {
-                    // 切断された
-                    Log.i("TAG", "Disconnected from GATT server.")
-                }
-            }
-
-            // サービスの検索結果を返す
-            override fun onServicesDiscovered(gatt: BluetoothGatt, status: Int) {
-                // 成功
-                if (status == BluetoothGatt.GATT_SUCCESS) {
-                    // サービスのリストを取得
-                   /* val gattService = getSupportedGattServices(address)
-                    for (service in gattService) {
-                        val uuid = service.uuid
-                        // サービスからCharacteristicsのリストを取得
-                        val characteristics = service.characteristics
-                        // Characteristic に Notification の受信要求を設定
-                        for (charastic in characteristics) {
-                            //
-                            if (ActivityCompat.checkSelfPermission(
-                                    activity,
-                                    Manifest.permission.BLUETOOTH_CONNECT
-                                ) != PackageManager.PERMISSION_GRANTED
-                            ) {
-                                return
-                            }
-                            gatt.setCharacteristicNotification(charastic, true)
-                        }
-                    }*/
-                    Log.w("TAG", "成功")
-                } else {
-                    Log.w("TAG", "onServicesDiscovered received: $status")
-                }
-            }
-
-            // 読み込み通知
-            override fun onCharacteristicRead(
-                gatt: BluetoothGatt,
-                characteristic: BluetoothGattCharacteristic,
-                status: Int
-            ) {
-                if (status == BluetoothGatt.GATT_SUCCESS) {
-                    // Characteristicの読込成功
-                }
-            }
-
-            // 書き込み通知
-            override fun onCharacteristicWrite(
-                gatt: BluetoothGatt,
-                characteristic: BluetoothGattCharacteristic,
-                status: Int
-            ) {
-                if (status == BluetoothGatt.GATT_SUCCESS) {
-                    // Characteristicの書込成功
-                }
-                // ...
-            }
-        }
-*/
-        /*
-        val mGattCallback = object : BluetoothGattCallback() {
-            override fun onConnectionStateChange(gatt: BluetoothGatt, status: Int, newState: Int) {
-                super.onConnectionStateChange(gatt, status, newState)
-
-                // 接続成功し、サービス取得
-                if (newState == BluetoothProfile.STATE_CONNECTED) {
-                    bluetoothGatt = gatt
-                    discoverService()
-                }
-            }
-
-            override fun onServicesDiscovered(gatt: BluetoothGatt, status: Int) {
-                super.onServicesDiscovered(gatt, status)
-
-                val serviceList = gatt.services
-
-                for (s in serviceList) {
-                    // サービス一覧を取得したり探したりする処理
-                    // あとキャラクタリスティクスを取得したり探したりしてもよい
-                    Log.d("TAG", s.toString())
-                }
-            }
-        }
-
-         */
-/*
-        val gattCallback = object : BluetoothGattCallback() {
-            override fun onConnectionStateChange(gatt: BluetoothGatt, status: Int, newState: Int) {
-                if (newState == BluetoothProfile.STATE_CONNECTED) {
-                    // GATTサーバーに接続された
-                    Toast.makeText(activity, "GATT Connect", Toast.LENGTH_SHORT).show()
-                    Log.d("TAG", "GATT Connect")
-                } else if (newState == BluetoothProfile.STATE_DISCONNECTED) {
-                    // GATTサーバーから切断された
-                    Toast.makeText(activity, "GATT No Connect", Toast.LENGTH_SHORT).show()
-                    Log.d("TAG", "GATT No Connect")
-                }
-            }
-
-            override fun onServicesDiscovered(gatt: BluetoothGatt, status: Int) {
-                super.onServicesDiscovered(gatt, status)
-
-                val serviceList = gatt.services
-
-                for (s in serviceList) {
-                    Log.d("TAG", "s${s}")
-                }
-
-                if (status == BluetoothGatt.GATT_SUCCESS) {
-                    // サービスが発見された
-                    Log.d("TAG", "サービスが発見された")
-                }
-            }
-
-            // 他のコールバックメソッド...
-        }
-        */
-
         if (ActivityCompat.checkSelfPermission(
                 activity,
                 Manifest.permission.BLUETOOTH_CONNECT
@@ -367,6 +232,9 @@ class BluetoothManager(private val activity: MainActivity) {
 
     // HIDデバイスに文字を送信する関数
     fun sendStringToDevice(stringToSend: String) {
+
+       // bluetoothLEService.sendString(data)
+
         // HIDサービスとキャラクタリスティックのUUID
         val serviceUuid = UUID.fromString("00001812-0000-1000-8000-00805f9b34fb") // HID Service UUID
         val characteristicUuid = UUID.fromString("00002a4d-0000-1000-8000-00805f9b34fb") // Report Characteristic UUID
@@ -440,16 +308,4 @@ class BluetoothManager(private val activity: MainActivity) {
         bluetoothLeAdvertiser?.startAdvertising(settings, data, callback)
     }
 
-  /*  private fun stopAdvertising() {
-        if (ActivityCompat.checkSelfPermission(
-                activity,
-                Manifest.permission.BLUETOOTH_ADVERTISE
-            ) != PackageManager.PERMISSION_GRANTED
-        ) {
-            return
-        }
-        bluetoothLeAdvertiser?.stopAdvertising(callback)
-    }
-
-   */
 }

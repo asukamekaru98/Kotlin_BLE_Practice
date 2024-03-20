@@ -13,8 +13,9 @@ class PermissionManager(private val activity: AppCompatActivity) {
             val coarseLocation = it[Manifest.permission.ACCESS_COARSE_LOCATION] ?: false
             val blueConnect = it[Manifest.permission.BLUETOOTH_CONNECT] ?: false
             val blueScanner = it[Manifest.permission.BLUETOOTH_SCAN] ?: false
+            val writeExtStorage = it[Manifest.permission.WRITE_EXTERNAL_STORAGE] ?: false
 
-            if (fineLocation && coarseLocation && blueConnect && blueScanner) {
+            if (fineLocation && coarseLocation && blueConnect && blueScanner && writeExtStorage) {
                 Toast.makeText(activity, "許可されました", Toast.LENGTH_SHORT)
                     .show()
             } else {
@@ -32,6 +33,7 @@ class PermissionManager(private val activity: AppCompatActivity) {
                 Manifest.permission.ACCESS_COARSE_LOCATION,
                 Manifest.permission.BLUETOOTH_CONNECT,
                 Manifest.permission.BLUETOOTH_SCAN,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE,
             )
         )
     }

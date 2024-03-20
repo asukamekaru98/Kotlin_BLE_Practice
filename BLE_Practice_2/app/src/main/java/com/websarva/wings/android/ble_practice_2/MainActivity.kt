@@ -8,9 +8,11 @@ import android.bluetooth.BluetoothGattCallback
 import android.bluetooth.le.BluetoothLeScanner
 import android.bluetooth.le.ScanCallback
 import android.bluetooth.le.ScanResult
+import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.os.Bundle
 import android.os.Handler
+import android.preference.PreferenceManager
 import android.util.Log
 import android.widget.Button
 import android.widget.Toast
@@ -19,9 +21,12 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.core.net.toUri
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
+import androidx.documentfile.provider.DocumentFile
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import java.io.File
 
 
 class MainActivity : AppCompatActivity() {
@@ -31,6 +36,8 @@ class MainActivity : AppCompatActivity() {
 	private lateinit var permissionManager: PermissionManager
 	private lateinit var bluetoothManager: BluetoothManager
 	private lateinit var bluetoothLeService: BluetoothLeService
+	private lateinit var bluetoothFileTransfer:BluetoothFileTransfer
+	lateinit var prefSetting: SharedPreferences
 
 	private var addList = ArrayList<BTdata>()       //まずは空のリストを用意
 	private var recyclerAdapter = RecyclerAdapter(addList,this)
@@ -57,6 +64,10 @@ class MainActivity : AppCompatActivity() {
 
 		bluetoothLeService = BluetoothLeService(this)
 
+		bluetoothFileTransfer = BluetoothFileTransfer(this)
+
+		prefSetting = PreferenceManager.getDefaultSharedPreferences(this)
+
 		//ボタン押下
 		findViewById<Button>(R.id.scan_button).setOnClickListener {
 
@@ -73,7 +84,10 @@ class MainActivity : AppCompatActivity() {
 		//ボタン押下
 		findViewById<Button>(R.id.send_button).setOnClickListener {
 
-			bluetoothManager.sendStringToDevice("aaaaaaaaaaaaaaaaaaaaa\n")
+			//bluetoothManager.sendStringToDevice("aaaaaaaaaaaaaaaaaaaaa\n")
+
+			//val bluetoothFileTransfer = BluetoothFileTransfer(context)
+
 		}
 
 		//ボタン押下
@@ -100,6 +114,19 @@ class MainActivity : AppCompatActivity() {
 		bluetoothManager.connectToDevice(device)
 
 
+	}
+
+	fun sendFile(device: BluetoothDevice){
+
+		val file = File("/storage/emulated/0/Download/20220323eturann1.pdf")
+		//val pairedDevices: Set<BluetoothDevice>? = bluetoothAdapter?.bondedDevices
+		//pairedDevices?.forEach { device ->
+		//	if (device.name == "Name of Your Windows Device") {
+		//		bluetoothFileTransfer.sendFile(device, file)
+		//	}
+		//}
+
+		bluetoothFileTransfer.sendFile(device, file)
 	}
 
 
