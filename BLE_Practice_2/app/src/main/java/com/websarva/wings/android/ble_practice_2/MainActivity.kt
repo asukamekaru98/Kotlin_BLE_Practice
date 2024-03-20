@@ -19,6 +19,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 
@@ -36,6 +37,9 @@ class MainActivity : AppCompatActivity() {
 
 	override fun onCreate(savedInstanceState: Bundle?) {
 		super.onCreate(savedInstanceState)
+
+
+
 		enableEdgeToEdge()
 		setContentView(R.layout.activity_main)
 		setSupportActionBar(findViewById(R.id.toolbar)) //アクションバー
@@ -69,7 +73,7 @@ class MainActivity : AppCompatActivity() {
 		//ボタン押下
 		findViewById<Button>(R.id.send_button).setOnClickListener {
 
-			bluetoothManager.sendStringToDevice("a")
+			bluetoothManager.sendStringToDevice("aaaaaaaaaaaaaaaaaaaaa\n")
 		}
 
 		//ボタン押下
