@@ -88,12 +88,16 @@ class MainActivity : AppCompatActivity() {
 
 			//val bluetoothFileTransfer = BluetoothFileTransfer(context)
 
+			bluetoothManager.connectDevice()
 		}
 
 		//ボタン押下
 		findViewById<Button>(R.id.advatise_button).setOnClickListener {
 
-			bluetoothManager.startAdvertisingAsHID()
+			//bluetoothManager.startAdvertisingAsHID()
+
+			bluetoothManager.connectDevice()
+
 		}
 
 	}
@@ -113,7 +117,11 @@ class MainActivity : AppCompatActivity() {
 		//bluetoothManager.connect2GATT(device)
 		bluetoothManager.connectToDevice(device)
 
+	}
 
+	fun setUUID(device: BluetoothDevice){
+
+		bluetoothManager.setUUID(device)
 	}
 
 	fun sendFile(device: BluetoothDevice){

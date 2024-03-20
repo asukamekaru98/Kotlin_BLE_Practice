@@ -6,6 +6,7 @@ import android.bluetooth.BluetoothDevice
 import android.bluetooth.BluetoothGatt
 import android.bluetooth.BluetoothGattCallback
 import android.bluetooth.BluetoothGattCharacteristic
+import android.bluetooth.BluetoothGattService
 import android.bluetooth.BluetoothProfile
 import android.bluetooth.le.AdvertiseCallback
 import android.bluetooth.le.AdvertiseData
@@ -46,17 +47,22 @@ class BluetoothManager(private val activity: MainActivity) {
 
     var bluetoothGatt: BluetoothGatt? = null
 
+    // UUIDはデバイスによって異なるため、適切なものに置き換えてください。
+    private lateinit var serviceUUID: UUID
+    private val characteristicUUID: UUID = UUID.fromString("6E400003-B5A3-F393-E0A9-E50E24DCCA9E")
+    private lateinit var useDevice: BluetoothDevice
+
    // private val bluetoothLEService: BluetoothLEService by lazy { BluetoothLEService(this) }
 
     // BLEデバイスをスキャンする
     fun scanLeDevice() {
-        val scanSettings = ScanSettings.Builder().build()
-        val scanFilters = mutableListOf<ScanFilter>()
-        val scanFilter = ScanFilter.Builder()
-            .setServiceUuid(ParcelUuid.fromString("00001812-0000-1000-8000-00805f9b34fb")) // HID Service UUID
-            .build()
+        //val scanSettings = ScanSettings.Builder().build()
+        //val scanFilters = mutableListOf<ScanFilter>()
+        //val scanFilter = ScanFilter.Builder()
+        //    .setServiceUuid(ParcelUuid.fromString("00001812-0000-1000-8000-00805f9b34fb")) // HID Service UUID
+        //    .build()
 
-        scanFilters.add(scanFilter)
+        //scanFilters.add(scanFilter)
 
         bluetoothLeScanner?.let { scanner ->
             if (!scanning) {
@@ -193,7 +199,8 @@ class BluetoothManager(private val activity: MainActivity) {
         ) {
             return
         }
-        bluetoothGatt = device.connectGatt(activity, false, gattCallback)
+        useDevice = device
+        bluetoothGatt = useDevice.connectGatt(activity, false, gattCallback)
     }
 
     private val gattCallback = object : BluetoothGattCallback() {
@@ -306,6 +313,89 @@ class BluetoothManager(private val activity: MainActivity) {
             return
         }
         bluetoothLeAdvertiser?.startAdvertising(settings, data, callback)
+    }
+
+    fun setUUID(device: BluetoothDevice){
+        if (ActivityCompat.checkSelfPermission(
+                activity,
+                Manifest.permission.BLUETOOTH_CONNECT
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            return
+        }
+        serviceUUID = UUID.fromString(device.uuids.toString())
+    }
+
+    private val gattCallback2 = object : BluetoothGattCallback() {
+        override fun onConnectionStateChange(gatt: BluetoothGatt, status: Int, newState: Int) {
+            if (newState == BluetoothProfile.STATE_CONNECTED) {
+                // サービスの発見を開始
+                if (ActivityCompat.checkSelfPermission(
+                        activity,
+                        Manifest.permission.BLUETOOTH_CONNECT
+                    ) != PackageManager.PERMISSION_GRANTED
+                ) {
+                    return
+                }
+                gatt.discoverServices()
+            }
+        }
+
+        override fun onServicesDiscovered(gatt: BluetoothGatt, status: Int) {
+            if (status == BluetoothGatt.GATT_SUCCESS) {
+                // サービスとキャラクタリスティックを取得
+                val service: BluetoothGattService? = gatt.getService(serviceUUID)
+                val characteristic: BluetoothGattCharacteristic? = service?.getCharacteristic(characteristicUUID)
+
+                // 数字をバイト配列に変換して送信
+                val numberToSend: Int = 123 // 送信したい数字
+                val value = ByteArray(4) // Intは4バイト
+                value[0] = (numberToSend shr 24).toByte()
+                value[1] = (numberToSend shr 16).toByte()
+                value[2] = (numberToSend shr 8).toByte()
+                value[3] = numberToSend.toByte()
+
+                characteristic?.value = value
+                if (ActivityCompat.checkSelfPermission(
+                        activity,
+                        Manifest.permission.BLUETOOTH_CONNECT
+                    ) != PackageManager.PERMISSION_GRANTED
+                ) {
+                    return
+                }
+                gatt.writeCharacteristic(characteristic)
+            }
+        }
+
+        override fun onCharacteristicWrite(gatt: BluetoothGatt, characteristic: BluetoothGattCharacteristic, status: Int) {
+            if (status == BluetoothGatt.GATT_SUCCESS) {
+                // 数字の送信に成功
+            }
+        }
+    }
+
+    fun connectDevice() {
+        val device = bluetoothAdapter?.getRemoteDevice(useDevice.address)
+        if (ActivityCompat.checkSelfPermission(
+                activity,
+                Manifest.permission.BLUETOOTH_CONNECT
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            return
+        }
+        bluetoothGatt = device?.connectGatt(activity, false, gattCallback2)
+    }
+
+
+    fun disconnectDevice() {
+        if (ActivityCompat.checkSelfPermission(
+                activity,
+                Manifest.permission.BLUETOOTH_CONNECT
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            return
+        }
+        bluetoothGatt?.disconnect()
     }
 
 }
