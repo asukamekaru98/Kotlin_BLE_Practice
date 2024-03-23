@@ -88,7 +88,7 @@ class MainActivity : AppCompatActivity() {
 
 			//val bluetoothFileTransfer = BluetoothFileTransfer(context)
 
-			bluetoothManager.connectDevice()
+			//bluetoothManager.connectDevice()
 		}
 
 		//ボタン押下
@@ -96,7 +96,7 @@ class MainActivity : AppCompatActivity() {
 
 			//bluetoothManager.startAdvertisingAsHID()
 
-			bluetoothManager.connectDevice()
+			bluetoothManager.disconnectDevice()
 
 		}
 
@@ -115,24 +115,14 @@ class MainActivity : AppCompatActivity() {
 
 		//bluetoothLeService.connect(device.address)
 		//bluetoothManager.connect2GATT(device)
-		bluetoothManager.connectToDevice(device)
-
-	}
-
-	fun setUUID(device: BluetoothDevice){
-
-		bluetoothManager.setUUID(device)
+		//bluetoothManager.connectToDevice(device)
+		bluetoothManager.connectDevice(device)
+		//bluetoothManager.setUUID(device)
 	}
 
 	fun sendFile(device: BluetoothDevice){
 
 		val file = File("/storage/emulated/0/Download/20220323eturann1.pdf")
-		//val pairedDevices: Set<BluetoothDevice>? = bluetoothAdapter?.bondedDevices
-		//pairedDevices?.forEach { device ->
-		//	if (device.name == "Name of Your Windows Device") {
-		//		bluetoothFileTransfer.sendFile(device, file)
-		//	}
-		//}
 
 		bluetoothFileTransfer.sendFile(device, file)
 	}

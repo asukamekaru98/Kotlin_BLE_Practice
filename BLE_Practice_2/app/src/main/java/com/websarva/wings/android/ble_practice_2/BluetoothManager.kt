@@ -26,6 +26,7 @@ import android.util.Log
 import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import org.json.JSONObject.NULL
 import java.util.UUID
 
 
@@ -49,7 +50,7 @@ class BluetoothManager(private val activity: MainActivity) {
 
     // UUIDはデバイスによって異なるため、適切なものに置き換えてください。
     private lateinit var serviceUUID: UUID
-    private val characteristicUUID: UUID = UUID.fromString("6E400003-B5A3-F393-E0A9-E50E24DCCA9E")
+    private val characteristicUUID: UUID = UUID.fromString("00000000-0000-4000-A000-000000000000")
     private lateinit var useDevice: BluetoothDevice
 
    // private val bluetoothLEService: BluetoothLEService by lazy { BluetoothLEService(this) }
@@ -138,7 +139,7 @@ class BluetoothManager(private val activity: MainActivity) {
         }
 
     }
-
+/*
     fun connect2GATT(device: BluetoothDevice) {
 
         val gattCallback = object : BluetoothGattCallback() {
@@ -191,6 +192,8 @@ class BluetoothManager(private val activity: MainActivity) {
 
     }
 
+ */
+/*
     fun connectToDevice(device: BluetoothDevice) {
         if (ActivityCompat.checkSelfPermission(
                 activity,
@@ -203,6 +206,8 @@ class BluetoothManager(private val activity: MainActivity) {
         bluetoothGatt = useDevice.connectGatt(activity, false, gattCallback)
     }
 
+ */
+/*
     private val gattCallback = object : BluetoothGattCallback() {
         override fun onConnectionStateChange(gatt: BluetoothGatt, status: Int, newState: Int) {
             if (newState == BluetoothProfile.STATE_CONNECTED) {
@@ -237,7 +242,10 @@ class BluetoothManager(private val activity: MainActivity) {
         }
     }
 
+ */
+
     // HIDデバイスに文字を送信する関数
+/*
     fun sendStringToDevice(stringToSend: String) {
 
        // bluetoothLEService.sendString(data)
@@ -277,6 +285,8 @@ class BluetoothManager(private val activity: MainActivity) {
 
     }
 
+ */
+/*
     fun startAdvertisingAsHID() {
         val settings = AdvertiseSettings.Builder()
             .setAdvertiseMode(AdvertiseSettings.ADVERTISE_MODE_LOW_LATENCY)
@@ -315,6 +325,10 @@ class BluetoothManager(private val activity: MainActivity) {
         bluetoothLeAdvertiser?.startAdvertising(settings, data, callback)
     }
 
+ */
+
+
+/*
     fun setUUID(device: BluetoothDevice){
         if (ActivityCompat.checkSelfPermission(
                 activity,
@@ -323,12 +337,28 @@ class BluetoothManager(private val activity: MainActivity) {
         ) {
             return
         }
-        serviceUUID = UUID.fromString(device.uuids.toString())
+
+        useDevice = device
+
+        //bluetoothAdapter?.getRemoteDevice(useDevice.address)
+
+        bluetoothGatt = useDevice.connectGatt(activity, false, gattCallback)
+
+        if(device.uuids != null) { // nullチェックを追加
+            serviceUUID = UUID.fromString(device.uuids.toString())
+        }
     }
 
+ */
+
+//------------------------------------------------------------------------------------------------------------------
     private val gattCallback2 = object : BluetoothGattCallback() {
         override fun onConnectionStateChange(gatt: BluetoothGatt, status: Int, newState: Int) {
+            Log.i("TAG", "onConnectionStateChange")
+
             if (newState == BluetoothProfile.STATE_CONNECTED) {
+                Log.i("TAG", "onConnectionStateChange >  if (newState == BluetoothProfile.STATE_CONNECTED) {")
+
                 // サービスの発見を開始
                 if (ActivityCompat.checkSelfPermission(
                         activity,
@@ -342,7 +372,11 @@ class BluetoothManager(private val activity: MainActivity) {
         }
 
         override fun onServicesDiscovered(gatt: BluetoothGatt, status: Int) {
+            Log.i("TAG", "onServicesDiscovered")
+
             if (status == BluetoothGatt.GATT_SUCCESS) {
+                Log.i("TAG", "onCharacteristicWrite >  if (status == BluetoothGatt.GATT_SUCCESS) {")
+
                 // サービスとキャラクタリスティックを取得
                 val service: BluetoothGattService? = gatt.getService(serviceUUID)
                 val characteristic: BluetoothGattCharacteristic? = service?.getCharacteristic(characteristicUUID)
@@ -368,14 +402,29 @@ class BluetoothManager(private val activity: MainActivity) {
         }
 
         override fun onCharacteristicWrite(gatt: BluetoothGatt, characteristic: BluetoothGattCharacteristic, status: Int) {
+            Log.i("TAG", "onCharacteristicWrite")
+
             if (status == BluetoothGatt.GATT_SUCCESS) {
+
                 // 数字の送信に成功
+                Toast.makeText(activity, "送信成功！", Toast.LENGTH_SHORT).show()
             }
         }
     }
 
-    fun connectDevice() {
-        val device = bluetoothAdapter?.getRemoteDevice(useDevice.address)
+    fun connectDevice(device: BluetoothDevice) {
+        //val device = bluetoothAdapter?.getRemoteDevice(useDevice.address)
+
+        useDevice = device
+
+        //bluetoothAdapter?.getRemoteDevice(useDevice.address)
+
+        if(device.uuids != null) { // nullチェックを追加
+            Log.i("TAG", "connectDevice > if(device.uuids != null) {")
+
+            serviceUUID = UUID.fromString(device.uuids.toString())
+        }
+
         if (ActivityCompat.checkSelfPermission(
                 activity,
                 Manifest.permission.BLUETOOTH_CONNECT
@@ -383,10 +432,12 @@ class BluetoothManager(private val activity: MainActivity) {
         ) {
             return
         }
-        bluetoothGatt = device?.connectGatt(activity, false, gattCallback2)
+        bluetoothGatt = useDevice.connectGatt(activity, false, gattCallback2)
+
     }
+//------------------------------------------------------------------------------------------------------------------
 
-
+    /*============================= BLE解除 =============================*/
     fun disconnectDevice() {
         if (ActivityCompat.checkSelfPermission(
                 activity,
@@ -396,6 +447,7 @@ class BluetoothManager(private val activity: MainActivity) {
             return
         }
         bluetoothGatt?.disconnect()
+        Toast.makeText(activity, "GATT解除！", Toast.LENGTH_SHORT).show()
     }
 
 }

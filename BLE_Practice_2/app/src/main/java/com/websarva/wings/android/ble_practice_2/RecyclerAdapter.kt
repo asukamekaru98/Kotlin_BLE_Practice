@@ -37,9 +37,9 @@ class RecyclerAdapter(private val list:ArrayList<BTdata>,private val activity: M
 				//val item = list[pos]
 				//トースト
 				Toast.makeText(v.context, list[pos].device.address ?: "No Address", Toast.LENGTH_SHORT).show()
-				//activity.connectGATT(list[pos].device)
+				activity.connectGATT(list[pos].device)
 				//activity.sendFile(list[pos].device)
-				activity.setUUID(list[pos].device)
+				//activity.setUUID(list[pos].device)
 			}
 		}
 	}
