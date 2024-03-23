@@ -49,8 +49,8 @@ class BluetoothManager(private val activity: MainActivity) {
     var bluetoothGatt: BluetoothGatt? = null
 
     // UUIDはデバイスによって異なるため、適切なものに置き換えてください。
-    private lateinit var serviceUUID: UUID
-    private val characteristicUUID: UUID = UUID.fromString("00000000-0000-4000-A000-000000000000")
+    private var serviceUUID: UUID = UUID.fromString("00000000-0000-4000-A000-000000000000")
+    private val characteristicUUID: UUID = UUID.fromString("00000000-0000-4000-A000-000000000001")
     private lateinit var useDevice: BluetoothDevice
 
    // private val bluetoothLEService: BluetoothLEService by lazy { BluetoothLEService(this) }
@@ -417,6 +417,7 @@ class BluetoothManager(private val activity: MainActivity) {
 
         useDevice = device
 
+
         //bluetoothAdapter?.getRemoteDevice(useDevice.address)
 
         if(device.uuids != null) { // nullチェックを追加
@@ -432,8 +433,10 @@ class BluetoothManager(private val activity: MainActivity) {
         ) {
             return
         }
-        bluetoothGatt = useDevice.connectGatt(activity, false, gattCallback2)
 
+        val device2 = bluetoothAdapter?.getRemoteDevice(useDevice.address)
+        //bluetoothGatt = useDevice.connectGatt(activity, false, gattCallback2)
+        bluetoothGatt = device2?.connectGatt(activity, false, gattCallback2)
     }
 //------------------------------------------------------------------------------------------------------------------
 
