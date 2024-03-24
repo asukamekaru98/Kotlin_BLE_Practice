@@ -1,29 +1,13 @@
 package com.websarva.wings.android.ble_practice_2
 
-import android.Manifest
-import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothDevice
-import android.bluetooth.BluetoothGatt
-import android.bluetooth.BluetoothGattCallback
-import android.bluetooth.le.BluetoothLeScanner
-import android.bluetooth.le.ScanCallback
-import android.bluetooth.le.ScanResult
+import android.content.Intent
 import android.content.SharedPreferences
-import android.content.pm.PackageManager
 import android.os.Bundle
-import android.os.Handler
 import android.preference.PreferenceManager
-import android.util.Log
 import android.widget.Button
-import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
-import androidx.core.net.toUri
-import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
-import androidx.documentfile.provider.DocumentFile
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import java.io.File
@@ -127,6 +111,17 @@ class MainActivity : AppCompatActivity() {
 		bluetoothFileTransfer.sendFile(device, file)
 	}
 
+	fun transScanActivity(device: BluetoothDevice){
+		//ScanActivityに遷移
+        val intent = Intent(
+            application,
+            SendActivity::class.java
+        )
+
+        intent.putExtra(Constants.KEY_TRANS_SEND_ACTIVITY,device)
+
+        startActivity(intent)
+	}
 
 }
 
