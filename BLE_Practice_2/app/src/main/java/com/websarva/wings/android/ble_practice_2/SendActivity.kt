@@ -10,14 +10,14 @@ class SendActivity : AppCompatActivity() {
     private lateinit var useDevice: BluetoothDevice
 
     //クラス
-    private lateinit var bluetoothManager: BluetoothManager
-
+    //private lateinit var bluetoothManager: BluetoothManager
+    private  lateinit var bleConnecter: BleConnecter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_send)
 
-        bluetoothManager = BluetoothManager(this)
+       //bluetoothManager = BluetoothManager(this)
 
         useDevice = intent.getParcelableExtra(Constants.KEY_TRANS_SEND_ACTIVITY)!!
 
@@ -25,7 +25,8 @@ class SendActivity : AppCompatActivity() {
 
             try {
                 //BlueTooth接続待機
-                bluetoothManager.connectDevice(useDevice)
+                //bluetoothManager.connectDevice(useDevice)
+                bleConnecter.connectDevice(useDevice)
 
             } catch (e: InterruptedException) {
                 return@Runnable
@@ -34,8 +35,8 @@ class SendActivity : AppCompatActivity() {
             runOnUiThread {
                 //描画切替 ロード画面 -> カメラ
                 //setContentView(R.layout.activity_scan)
-                findViewById<View>(R.id.LL_Load).visibility = View.GONE
-                findViewById<View>(R.id.LL_Main).visibility = View.VISIBLE
+                findViewById<View>(R.id.BtSendLoad).visibility = View.GONE
+                //findViewById<View>(R.id.LL_Main).visibility = View.VISIBLE
             }
         }).start()
 

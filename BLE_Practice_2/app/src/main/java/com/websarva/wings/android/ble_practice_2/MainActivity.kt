@@ -18,7 +18,8 @@ class MainActivity : AppCompatActivity() {
 	//クラス
 	private lateinit var recyclerView:RecyclerView
 	private lateinit var permissionManager: PermissionManager
-	private lateinit var bluetoothManager: BluetoothManager
+	//private lateinit var bluetoothManager: BluetoothManager
+	private  lateinit var bleScanner: BleScanner
 	private lateinit var bluetoothLeService: BluetoothLeService
 	private lateinit var bluetoothFileTransfer:BluetoothFileTransfer
 	lateinit var prefSetting: SharedPreferences
@@ -44,7 +45,8 @@ class MainActivity : AppCompatActivity() {
 		permissionManager = PermissionManager(this)
 
 		// BluetoothManagerのインスタンスを生成し、MainActivityのインスタンスを渡す
-		bluetoothManager = BluetoothManager(this)
+		//bluetoothManager = BluetoothManager(this)
+		bleScanner = BleScanner(this)
 
 		bluetoothLeService = BluetoothLeService(this)
 
@@ -59,7 +61,8 @@ class MainActivity : AppCompatActivity() {
 			permissionManager.checkPermission()
 
 			//BTスキャン
-			bluetoothManager.scanLeDevice()
+			//bluetoothManager.scanLeDevice()
+			bleScanner.scanLeDevice()
 
 			//BT GATTサーバ接続
 		//	bluetoothManager.connect2GATT()
@@ -80,7 +83,7 @@ class MainActivity : AppCompatActivity() {
 
 			//bluetoothManager.startAdvertisingAsHID()
 
-			bluetoothManager.disconnectDevice()
+			//bluetoothManager.disconnectDevice()
 
 		}
 
@@ -100,7 +103,7 @@ class MainActivity : AppCompatActivity() {
 		//bluetoothLeService.connect(device.address)
 		//bluetoothManager.connect2GATT(device)
 		//bluetoothManager.connectToDevice(device)
-		bluetoothManager.connectDevice(device)
+		//bluetoothManager.connectDevice(device)
 		//bluetoothManager.setUUID(device)
 	}
 

@@ -21,9 +21,9 @@ import androidx.core.content.ContextCompat
 import java.util.UUID
 
 
-open class BluetoothManager() {
+open class BluetoothManager {
 
-    private val bluetoothAdapter: BluetoothAdapter? = BluetoothAdapter.getDefaultAdapter()
+    val bluetoothAdapter: BluetoothAdapter? = BluetoothAdapter.getDefaultAdapter()
     val bluetoothLeScanner: BluetoothLeScanner? = bluetoothAdapter?.bluetoothLeScanner
 
     private var bluetoothLeAdvertiser: BluetoothLeAdvertiser? = bluetoothAdapter?.bluetoothLeAdvertiser
@@ -43,13 +43,13 @@ open class BluetoothManager() {
     // serviceUUIDは、BLEデバイスが提供するサービスを識別するためのUUIDです。
     // サービスは、関連するキャラクタリスティックの集まりで、特定の機能を提供します。例えば、心拍数サービスやバッテリーサービスなどがあります
     // 今回は独自のUUIDを使っている
-    private var serviceUUID: UUID = UUID.fromString("00000000-0000-4000-A000-000000000000")
+    var serviceUUID: UUID = UUID.fromString("00000000-0000-4000-A000-000000000000")
 
     // ※chatGPTの曰く
     // characteristicUUIDは、特定のサービス内のキャラクタリスティックを識別するためのUUIDです。
     // キャラクタリスティックは、データの値（例えば心拍数の数値やバッテリーの残量）や、そのデータに関連する操作（読み取り、書き込み、通知）を定義します
     // 今回は独自のUUIDを使っている
-    private val characteristicUUID: UUID = UUID.fromString("00000000-0000-4000-A000-000000000001")
+    val characteristicUUID: UUID = UUID.fromString("00000000-0000-4000-A000-000000000001")
     private lateinit var useDevice: BluetoothDevice
 
    // private val bluetoothLEService: BluetoothLEService by lazy { BluetoothLEService(this) }
@@ -351,7 +351,7 @@ open class BluetoothManager() {
     }
 
  */
-
+/*
 //------------------------------------------------------------------------------------------------------------------
     private val gattCallback2 = object : BluetoothGattCallback() {
         override fun onConnectionStateChange(gatt: BluetoothGatt, status: Int, newState: Int) {
@@ -453,5 +453,5 @@ open class BluetoothManager() {
         bluetoothGatt?.disconnect()
         Toast.makeText(activity, "GATT解除！", Toast.LENGTH_SHORT).show()
     }
-
+*/
 }

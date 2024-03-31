@@ -13,8 +13,6 @@ class BleScanner(val activity: Context):BluetoothManager() {
 
     private var scanning = false
 
-    lateinit var BlueToothData:BluetoothDevice
-
     // BLEデバイスをスキャンする
     fun scanLeDevice() {
         //val scanSettings = ScanSettings.Builder().build()
@@ -82,7 +80,7 @@ class BleScanner(val activity: Context):BluetoothManager() {
 
 
                 //val data = BTdata(device.name ?: "No Name")
-                BlueToothData = BTdata(device)
+                BTdata(device)
 
                 //scanResult.add(data)   //リストに追加
                 //activity.setAddData(data)
