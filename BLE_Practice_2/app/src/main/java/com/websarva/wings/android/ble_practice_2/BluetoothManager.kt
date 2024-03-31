@@ -21,21 +21,21 @@ import androidx.core.content.ContextCompat
 import java.util.UUID
 
 
-class BluetoothManager(private val activity: MainActivity) {
+open class BluetoothManager() {
 
     private val bluetoothAdapter: BluetoothAdapter? = BluetoothAdapter.getDefaultAdapter()
-    private val bluetoothLeScanner: BluetoothLeScanner? = bluetoothAdapter?.bluetoothLeScanner
+    val bluetoothLeScanner: BluetoothLeScanner? = bluetoothAdapter?.bluetoothLeScanner
 
     private var bluetoothLeAdvertiser: BluetoothLeAdvertiser? = bluetoothAdapter?.bluetoothLeAdvertiser
 
     private var scanning = false
-    private val handler = Handler()
+    val handler = Handler()
 
     private var scanResult = ArrayList<BTdata>()       //まずは空のリストを用意
     //private val recyclerView:RecyclerView = rV
 
     // BLEスキャンの時間制限(10秒)
-    private val SCAN_PERIOD: Long = 1000
+    val SCAN_PERIOD: Long = 1000
 
     var bluetoothGatt: BluetoothGatt? = null
 
@@ -53,7 +53,7 @@ class BluetoothManager(private val activity: MainActivity) {
     private lateinit var useDevice: BluetoothDevice
 
    // private val bluetoothLEService: BluetoothLEService by lazy { BluetoothLEService(this) }
-
+/*
     // BLEデバイスをスキャンする
     fun scanLeDevice() {
         //val scanSettings = ScanSettings.Builder().build()
@@ -138,6 +138,8 @@ class BluetoothManager(private val activity: MainActivity) {
         }
 
     }
+
+ */
 /*
     fun connect2GATT(device: BluetoothDevice) {
 
