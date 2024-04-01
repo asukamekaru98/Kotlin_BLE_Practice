@@ -9,7 +9,7 @@ import android.content.pm.PackageManager
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 
-class BleScanner(val activity: Context):BluetoothManager() {
+class BleScanner(val activity: MainActivity):BluetoothManager() {
 
     private var scanning = false
 
@@ -80,10 +80,11 @@ class BleScanner(val activity: Context):BluetoothManager() {
 
 
                 //val data = BTdata(device.name ?: "No Name")
-                BTdata(device)
+                //BTdata(device)
+                val data = BTdata(device)
 
                 //scanResult.add(data)   //リストに追加
-                //activity.setAddData(data)
+                activity.setAddData(data)
                 //recyclerAdapter.notifyItemInserted(addList.lastIndex)   //追加した情報がRecyclerViewの末尾に追加される
 
                 //Log.d("TAG", scanResult.toString())
