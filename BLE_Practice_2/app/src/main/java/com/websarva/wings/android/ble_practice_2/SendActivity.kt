@@ -21,6 +21,8 @@ class SendActivity : AppCompatActivity() {
 
         useDevice = intent.getParcelableExtra(Constants.KEY_TRANS_SEND_ACTIVITY)!!
 
+        bleConnecter.connectDevice(useDevice)
+        /*
         Thread(Runnable {
 
             try {
@@ -39,7 +41,7 @@ class SendActivity : AppCompatActivity() {
                 //findViewById<View>(R.id.LL_Main).visibility = View.VISIBLE
             }
         }).start()
-
+*/
 
     }
 }
