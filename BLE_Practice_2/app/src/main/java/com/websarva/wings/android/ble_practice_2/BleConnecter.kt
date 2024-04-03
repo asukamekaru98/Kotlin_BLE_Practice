@@ -77,6 +77,8 @@ class BleConnecter(val activity: Context):BluetoothManager() {
         }
     }
 
+    //fun send
+
     fun connectDevice(device: BluetoothDevice) {
         //val device = bluetoothAdapter?.getRemoteDevice(useDevice.address)
 

@@ -18,11 +18,12 @@ class SendActivity : AppCompatActivity() {
         setContentView(R.layout.activity_send)
 
        //bluetoothManager = BluetoothManager(this)
+        bleConnecter = BleConnecter(this)
 
         useDevice = intent.getParcelableExtra(Constants.KEY_TRANS_SEND_ACTIVITY)!!
 
-        bleConnecter.connectDevice(useDevice)
-        /*
+        //bleConnecter.connectDevice(useDevice)
+
         Thread(Runnable {
 
             try {
@@ -41,7 +42,10 @@ class SendActivity : AppCompatActivity() {
                 //findViewById<View>(R.id.LL_Main).visibility = View.VISIBLE
             }
         }).start()
-*/
+
+
+
+
 
     }
 }
