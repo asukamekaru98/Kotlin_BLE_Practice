@@ -16,6 +16,8 @@ import java.util.UUID
 
 class BleConnecter(val activity: Context):BluetoothManager() {
 
+    private lateinit var btGatt: BluetoothGatt
+    private var iStatus: Int = 0
 
     private val gattCallback2 = object : BluetoothGattCallback() {
         override fun onConnectionStateChange(gatt: BluetoothGatt, status: Int, newState: Int) {
@@ -37,8 +39,10 @@ class BleConnecter(val activity: Context):BluetoothManager() {
         }
 
         override fun onServicesDiscovered(gatt: BluetoothGatt, status: Int) {
-            Log.i("TAG", "onServicesDiscovered")
 
+            btGatt = gatt
+            iStatus = status
+/*
             if (status == BluetoothGatt.GATT_SUCCESS) {
                 Log.i("TAG", "onCharacteristicWrite >  if (status == BluetoothGatt.GATT_SUCCESS) {")
 
@@ -64,6 +68,8 @@ class BleConnecter(val activity: Context):BluetoothManager() {
                 }
                 gatt.writeCharacteristic(characteristic)
             }
+
+ */
         }
 
         override fun onCharacteristicWrite(gatt: BluetoothGatt, characteristic: BluetoothGattCharacteristic, status: Int) {
@@ -77,7 +83,35 @@ class BleConnecter(val activity: Context):BluetoothManager() {
         }
     }
 
-    //fun send
+    fun send(numberToSend: Int){
+
+
+        if (iStatus == BluetoothGatt.GATT_SUCCESS) {
+            Log.i("TAG", "onCharacteristicWrite >  if (status == BluetoothGatt.GATT_SUCCESS) {")
+
+            // サービスとキャラクタリスティックを取得
+            val service: BluetoothGattService? = btGatt.getService(serviceUUID)
+            val characteristic: BluetoothGattCharacteristic? = service?.getCharacteristic(characteristicUUID)
+
+            // 数字をバイト配列に変換して送信
+
+            val value = ByteArray(4) // Intは4バイト
+            value[0] = (numberToSend shr 24).toByte()
+            value[1] = (numberToSend shr 16).toByte()
+            value[2] = (numberToSend shr 8).toByte()
+            value[3] = numberToSend.toByte()
+
+            characteristic?.value = value
+            if (ActivityCompat.checkSelfPermission(
+                    activity,
+                    Manifest.permission.BLUETOOTH_CONNECT
+                ) != PackageManager.PERMISSION_GRANTED
+            ) {
+                return
+            }
+            btGatt.writeCharacteristic(characteristic)
+        }
+    }
 
     fun connectDevice(device: BluetoothDevice) {
         //val device = bluetoothAdapter?.getRemoteDevice(useDevice.address)
