@@ -2,6 +2,7 @@ package com.websarva.wings.android.ble_practice_2
 
 import android.bluetooth.BluetoothDevice
 import android.os.Bundle
+import android.view.MenuItem
 import android.view.View
 import android.widget.Button
 import android.widget.EditText
@@ -21,6 +22,9 @@ class SendActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_send)
+        setSupportActionBar(findViewById(R.id.toolbar)) //アクションバー
+
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
        //bluetoothManager = BluetoothManager(this)
         bleConnecter = BleConnecter(this)
@@ -66,5 +70,17 @@ class SendActivity : AppCompatActivity() {
         }
 
 
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        // android.R.id.home に戻るボタンを押した時のidが取得できる
+        if (item.itemId == android.R.id.home) {
+
+            bleConnecter.disconnectDevice()
+
+            // 今回はActivityを終了させている
+            finish()
+        }
+        return super.onOptionsItemSelected(item)
     }
 }
